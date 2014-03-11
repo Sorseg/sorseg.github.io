@@ -593,3 +593,7 @@ td.sel_date.date_3 a {
 input.invalid {
     background: #ffcccc;
 }
+
+#ui-datepicker-div {
+    display: none;
+}
