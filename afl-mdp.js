@@ -1,7 +1,8 @@
-jQuery(function(){
+jQuery(function () {
     var dateFormat = 'dd.mm.yy';
     var lastFocused = $("#date1");
     var calendar = $('#cal');
+    var calendar_validator = $('#datevalidator')
     var inputs = $("#date1, #date2, #date3, #date4");
     
     var input_dates = [];
@@ -10,15 +11,11 @@ jQuery(function(){
     var dates_max = 0;
     
     function isValid(input){
-        var tempDate = calendar.datepicker('getDate');
-        
         try{
-            calendar.datepicker('setDate', input);
-            return input == $.datepicker.formatDate(dateFormat, calendar.datepicker('getDate'));
-        } catch(e){
+            calendar_validator.datepicker('setDate', input);
+            return input == $.datepicker.formatDate(dateFormat, calendar_validator.datepicker('getDate'));
+        } catch(e) {
             return false;
-        } finally {
-            calendar.datepicker('setDate', tempDate);
         }
     };
     
@@ -55,32 +52,44 @@ jQuery(function(){
         lastFocused = this;
     });
     
-    calendar.datepicker(
-        {
-            onSelect:
-                function(date){
-                    $(lastFocused).val(date).focus();
-                    inputs.filter('[value=""]').first().focus();
-                    inputs.change();
-                },
-            
-            dateFormat: dateFormat,
-            minDate: 0,
-            maxDate: 330,
-            numberOfMonths: 2,
-            beforeShowDay: function(date){
-                var datetime = date.getTime();
-                i = dates_time_array.indexOf(datetime);
-                if(i != -1){
-                    return [true, 'sel_date date_'+(i+1)];
-                } else if(dates_time_array.length > 1
-                          && datetime > dates_min
-                          && datetime < dates_max){
-                    return [true, 'sel_date'];
-                } else {
-                    return [true, ''];
-                }
+    var calendar_properties = {
+        dateFormat: dateFormat,
+        minDate: 0,
+        maxDate: 330
+    };
+    
+    var visible_calendar_properties = {
+        onSelect:
+            function(date, inst){
+                $(lastFocused).val(date).focus();
+                inputs.filter('[value=""]').first().focus();
+                inputs.change();
+            },
+    
+        numberOfMonths: 2,
+    
+        beforeShowDay: function(date){
+            var datetime = date.getTime();
+            i = dates_time_array.indexOf(datetime);
+            if(i != -1){
+                return [true, 'sel_date date_'+(i+1)];
+            } else if(dates_time_array.length > 1
+                      && datetime > dates_min
+                      && datetime < dates_max){
+                return [true, 'sel_date'];
+            } else {
+                return [true, ''];
             }
+        },
+
+        onChangeMonthYear: function(year, month, inst){
+
         }
-    );
+    };
+    
+    jQuery.extend(true, visible_calendar_properties, calendar_properties);
+    
+    calendar_validator.datepicker(calendar_properties);
+    calendar.datepicker(visible_calendar_properties);
+
 });
