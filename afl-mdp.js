@@ -1,5 +1,5 @@
 jQuery(function(){
-    var dateFormat = 'yy.mm.dd';
+    var dateFormat = 'dd.mm.yy';
     var lastFocused = $("#date1");
     var calendar = $('#cal');
     var inputs = $("#date1, #date2, #date3, #date4");
@@ -35,12 +35,12 @@ jQuery(function(){
         //Sort:
         dates = jQuery.map(inputs.not('.invalid'), function(i,e){
             if(i.value){
-                return i.value;
+                return $.datepicker.parseDate(dateFormat, i.value).getTime();
             }
         });
         dates.sort()
         inputs.not('.invalid').each(function(i,e){
-            e.value = dates[i] || '';
+            e.value = dates[i]? $.datepicker.formatDate(dateFormat, $.datepicker.parseDate('@', dates[i])) : '';
         });
         input_dates = jQuery.map(inputs.not('.invalid'),
                                  function(i,e){return $.datepicker.parseDate(dateFormat, i.value)});
